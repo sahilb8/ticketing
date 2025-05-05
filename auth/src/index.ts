@@ -1,5 +1,6 @@
 import express from 'express';
 import { json } from 'body-parser';
+import mongoose from 'mongoose';
 
 import { currentUserRouter } from './routes/current-user';
 import { signInRouter } from './routes/signin';
@@ -18,6 +19,16 @@ app.use(signUpRouter);
 // commenting for now
 // app.use(errorHandler);
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000!!!!!!!!!!');
-});
+const start = async ()=> {
+  try {
+    await mongoose.connect('mongodb://auth-mongo-srv:27017/auth');
+    app.listen(3000, () => {
+      console.log('Server is running on port 3000!!!!!!!!!!');
+    });
+    console.log('Connected to auth mongodb');
+  } catch(err) {
+    console.log(err);
+  }  
+}
+
+start();

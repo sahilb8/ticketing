@@ -2,6 +2,8 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import { Request, Response } from 'express';
 import { RequestValidationError } from '../errors/request-validation-error';
+import { User } from '../models/user';
+import { BadRequestError } from '../errors/bad-rquest-error';
 
 const router = express.Router();
 
@@ -14,7 +16,7 @@ router.post(
       .isLength({ min: 4, max: 20 })
       .withMessage('The password should be minimum 4 letters and maximum 20'),
   ],
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -22,8 +24,18 @@ router.post(
     }
 
     const { email, password } = req.body;
-    console.log('Creating an user!!!!!!!');
-    res.send({});
+    
+    const existingUser = await User.findOne({email: email});
+
+    if(existingUser) {
+      console.log('the user already exists!!!!');
+      throw new BadRequestError('The user already exists');
+    }
+
+    const user = User.build({email: email, password: password});
+    await user.save();
+
+    res.status(201).send(user);
   },
 );
 
