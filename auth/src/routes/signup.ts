@@ -1,10 +1,10 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { body, validationResult } from 'express-validator';
+import { body } from 'express-validator';
 import { Request, Response } from 'express';
-import { RequestValidationError } from '../errors/request-validation-error';
 import { User } from '../models/user';
 import { BadRequestError } from '../errors/bad-rquest-error';
+import { validateRequest } from '../middleware/validate-request';
 
 const router = express.Router();
 
@@ -17,13 +17,8 @@ router.post(
       .isLength({ min: 4, max: 20 })
       .withMessage('The password should be minimum 4 letters and maximum 20'),
   ],
+  validateRequest,
   async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      throw new RequestValidationError(errors.array());
-    }
-
     const { email, password } = req.body;
 
     const existingUser = await User.findOne({ email: email });
@@ -42,7 +37,7 @@ router.post(
         id: user.id,
         email: user.email,
       },
-      'wegwg',
+      process.env.JWT_KEY!,
     );
 
     // save the jwt in the cookie

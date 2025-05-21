@@ -12,10 +12,12 @@ import { errorHandler } from './middleware/error-handler';
 const app = express();
 app.set('trust proxy', true);
 app.use(json());
-app.use(cookieSession({
-  signed: false,
-  secure: true,
-}));
+app.use(
+  cookieSession({
+    signed: false,
+    secure: true,
+  }),
+);
 
 app.use(currentUserRouter);
 app.use(signInRouter);
@@ -23,16 +25,19 @@ app.use(signOutRouter);
 app.use(signUpRouter);
 app.use(errorHandler);
 
-const start = async ()=> {
+const start = async () => {
   try {
+    if (!process.env.JWT_KEY) {
+      throw new Error('JWT_KEY has to be defined in secrets');
+    }
     await mongoose.connect('mongodb://auth-mongo-srv:27017/auth');
     app.listen(3000, () => {
       console.log('Server is running on port 3000!!!!!!!!!!');
     });
     console.log('Connected to auth mongodb');
-  } catch(err) {
+  } catch (err) {
     console.log(err);
-  }  
-}
+  }
+};
 
 start();
