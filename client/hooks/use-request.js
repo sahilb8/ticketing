@@ -1,30 +1,33 @@
-import { useState } from 'react';
 import axios from 'axios';
+import { useState } from 'react';
 
-export default ({url, method, body, onSuccess}) => {
+export default ({ url, method, body, onSuccess }) => {
   const [errors, setErrors] = useState(null);
+
   const doRequest = async () => {
     try {
       setErrors(null);
-      const respone = await axios[method](url, body);
+      const response = await axios[method](url, body);
 
-      if(onSuccess) {
-        onSuccess();
+      if (onSuccess) {
+        onSuccess(response.data);
       }
-      return respone.data;
-    } catch(err) {
+
+      return response.data;
+    } catch (err) {
+      console.log(err);
       setErrors(
-        <div class="alert alert-danger">
-          <h4>Ooops...</h4>
+        <div className="alert alert-danger">
+          <h4>Ooops....</h4>
           <ul className="my-0">
-            {err.respone.data.errors.map((err) => (
+            {err.response.data.errors.map(err => (
               <li key={err.message}>{err.message}</li>
             ))}
           </ul>
         </div>
       );
     }
-  }
+  };
 
   return { doRequest, errors };
 };
