@@ -6,7 +6,7 @@ import { currentUserRouter } from './routes/current-user';
 import { signInRouter } from './routes/signin';
 import { signOutRouter } from './routes/signout';
 import { signUpRouter } from './routes/signup';
-import { errorHandler } from './middleware/error-handler';
+import { errorHandler } from '@sb7184ticketing/common';
 
 const app = express();
 app.set('trust proxy', true);
