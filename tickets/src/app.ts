@@ -2,7 +2,15 @@ import express from 'express';
 import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 
-import { errorHandler } from '@sb7184ticketing/common';
+import {
+  errorHandler,
+  NotFoundError,
+  currentUser,
+} from '@sb7184ticketing/common';
+import { createTicketRouter } from './routes/new';
+import { showTicketRouter } from './routes/show';
+import { indexTicketRouter } from './routes';
+import { updateTicketRouter } from './routes/update';
 
 const app = express();
 app.set('trust proxy', true);
@@ -13,6 +21,18 @@ app.use(
     secure: process.env.NODE_ENV !== 'test',
   }),
 );
+
+// this sets the current user that is logged in to req
+app.use(currentUser);
+
+app.use(createTicketRouter);
+app.use(showTicketRouter);
+app.use(indexTicketRouter);
+app.use(updateTicketRouter);
+
+app.use('*', async (req, res) => {
+  throw new NotFoundError();
+});
 
 app.use(errorHandler);
 

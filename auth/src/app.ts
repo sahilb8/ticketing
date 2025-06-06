@@ -6,7 +6,7 @@ import { currentUserRouter } from './routes/current-user';
 import { signInRouter } from './routes/signin';
 import { signOutRouter } from './routes/signout';
 import { signUpRouter } from './routes/signup';
-import { errorHandler } from '@sb7184ticketing/common';
+import { errorHandler, NotFoundError } from '@sb7184ticketing/common';
 
 const app = express();
 app.set('trust proxy', true);
@@ -22,6 +22,12 @@ app.use(currentUserRouter);
 app.use(signInRouter);
 app.use(signOutRouter);
 app.use(signUpRouter);
+
+app.use('*', async(req,res) => {
+  throw new NotFoundError();
+});
+
 app.use(errorHandler);
+
 
 export { app };
