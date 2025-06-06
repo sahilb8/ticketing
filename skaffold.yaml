@@ -24,6 +24,14 @@ build:
         manual:
           - src: "**/*.js"
             dest: .
+    - image: sahilb7184/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.js"
+            dest: .
 
 # apiVersion: skaffold/v4beta3
 # kind: Config
